@@ -19,7 +19,21 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    // ✅ FIXED: safe signing config (NO NULL CRASH)
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    // ✅ NEW WAY (NO kotlinOptions BLOCK)
+    kotlin {
+        jvmToolchain(11)
+    }
+
     signingConfigs {
         create("release") {
             val keystorePath = System.getenv("KEYSTORE_PATH")
@@ -43,7 +57,7 @@ android {
                 "proguard-rules.pro"
             )
 
-            // ✅ IMPORTANT FIX: only assign if valid
+            // ✅ SAFE SIGNING (prevents NullPointerException in Codemagic)
             val ks = signingConfigs.findByName("release")
             if (ks?.storeFile != null) {
                 signingConfig = ks
@@ -56,21 +70,6 @@ android {
             isDebuggable = true
             signingConfig = null
         }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    // ✅ FIX for your kotlinOptions error
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-
-    buildFeatures {
-        compose = true
-        buildConfig = true
     }
 
     testOptions {
@@ -117,25 +116,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.retrofit)
 
-    testImplementation(libs.androidx.compose.ui.test.junit4)
-    testImplementation(libs.androidx.core)
-    testImplementation(libs.androidx.junit)
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.robolectric)
-    testImplementation(libs.roborazzi)
-    testImplementation(libs.roborazzi.compose)
-    testImplementation(libs.roborazzi.junit.rule)
-
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.runner)
-
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-
     ksp(libs.androidx.room.compiler)
     ksp(libs.moshi.kotlin.codegen)
+
+    testImplementation(libs.junit)
 }
