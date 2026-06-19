@@ -1,21 +1,21 @@
 workflows:
-android-debug:
-name: Android Debug Build
+  android-debug:
+    name: Android Debug Build
 
-environment:
-  java: 17
-  vars:
-    GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4096m"
+    environment:
+      java: 17
+      vars:
+        GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4096m"
 
-cache:
-  cache_paths:
-    - ~/.gradle/caches
-    - ~/.gradle/wrapper
+    cache:
+      cache_paths:
+        - ~/.gradle/caches
+        - ~/.gradle/wrapper
 
-scripts:
-  - chmod +x gradlew
-  - ./gradlew clean
-  - ./gradlew assembleDebug --stacktrace
+    scripts:
+      - chmod +x gradlew
+      - ./gradlew clean
+      - ./gradlew assembleDebug --stacktrace
 
-artifacts:
-  - app/build/outputs/**/*.apk
+    artifacts:
+      - app/build/outputs/**/*.apk
