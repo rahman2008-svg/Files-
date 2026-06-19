@@ -1,0 +1,6 @@
+{
+  "name": "Files",
+  "description": "An elegant and full-featured clone of Files by Google (Google Files). Manage files, clean up storage, use a secured Safe Folder with passcode, and fast offline share simulation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
