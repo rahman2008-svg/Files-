@@ -1,38 +1,40 @@
 workflows:
   android-release:
-    name: Android Release AAB (NexVora Ready)
+    name: Android Release AAB (Fixed Signing)
+
     max_build_duration: 120
 
     environment:
       java: 17
 
+      # ✅ THIS MUST MATCH YOUR UPLOADED KEYSTORE IN CODEMAGIC UI
       android_signing:
         - keystore_reference
 
       vars:
         PACKAGE_NAME: "com.aistudio.files.go.kxmpzq"
-        GRADLEW_PATH: "./gradlew"
 
     scripts:
 
-      - name: Checkout
+      - name: Checkout source
         script: |
           git checkout .
 
-      - name: Set up local properties
+      - name: Set up Android SDK path
         script: |
           echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
-      - name: Clean project
+      - name: Grant permission to Gradle
         script: |
           chmod +x ./gradlew
+
+      - name: Clean project
+        script: |
           ./gradlew clean
 
       - name: Build Release AAB
         script: |
-          ./gradlew bundleRelease \
-          --stacktrace \
-          --no-daemon
+          ./gradlew bundleRelease --stacktrace --no-daemon
 
     artifacts:
       - app/build/outputs/**/*.aab
@@ -41,4 +43,4 @@ workflows:
     publishing:
       email:
         recipients:
-          - dev@nexvora.com
+          - your-email@example.com
