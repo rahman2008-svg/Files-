@@ -21,8 +21,22 @@ android {
     }
 
     /**
-     * ✅ FIX: SAFE SIGNING CONFIG (CRITICAL FOR CODEMAGIC)
+     * ✅ FIX: JVM TOOLCHAIN (REPLACES kotlinOptions)
      */
+    kotlin {
+        jvmToolchain(11)
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+
     signingConfigs {
         create("release") {
             val keystorePath = System.getenv("KEYSTORE_PATH")
@@ -40,10 +54,7 @@ android {
                 keyAlias = "upload"
                 this.keyPassword = keyPassword
             } else {
-                // ⚠️ CRITICAL FIX:
-                // Prevent NULL signing crash in CI
-                // If no keystore → Gradle will NOT crash
-                println("⚠️ Release signing disabled (missing keystore env)")
+                println("⚠️ No keystore found → Release will be unsigned")
             }
         }
     }
@@ -58,30 +69,12 @@ android {
                 "proguard-rules.pro"
             )
 
-            /**
-             * ✅ SAFE SIGNING ASSIGNMENT
-             */
             signingConfig = signingConfigs.findByName("release")
         }
 
         debug {
             isDebuggable = true
-            signingConfig = null
         }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-
-    buildFeatures {
-        compose = true
-        buildConfig = true
     }
 
     testOptions {
@@ -92,7 +85,7 @@ android {
 }
 
 /**
- * 🔐 Secrets plugin
+ * 🔐 Secrets
  */
 secrets {
     propertiesFileName = ".env"
@@ -139,23 +132,16 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.retrofit)
 
-    testImplementation(libs.androidx.compose.ui.test.junit4)
-    testImplementation(libs.androidx.core)
-    testImplementation(libs.androidx.junit)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.robolectric)
     testImplementation(libs.roborazzi)
     testImplementation(libs.roborazzi.compose)
-    testImplementation(libs.roborazzi.junit.rule)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.runner)
 
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     ksp(libs.androidx.room.compiler)
