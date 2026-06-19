@@ -1,8 +1,9 @@
 workflows:
 android-debug:
 name: Android Debug Build
+
 environment:
-java: 17
+  java: 17
 
 scripts:
   - chmod +x gradlew
