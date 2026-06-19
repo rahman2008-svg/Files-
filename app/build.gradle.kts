@@ -19,20 +19,34 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // =========================
+    // 🔐 SAFE SIGNING CONFIG
+    // =========================
     signingConfigs {
-        create("release") {
-            val keystorePath = System.getenv("KEYSTORE_PATH")
 
-            if (keystorePath != null && file(keystorePath).exists()) {
+        create("release") {
+
+            val keystorePath = System.getenv("KEYSTORE_PATH")
+            val storePass = System.getenv("STORE_PASSWORD")
+            val keyPass = System.getenv("KEY_PASSWORD")
+
+            // ONLY apply signing if ALL values exist
+            if (
+                !keystorePath.isNullOrBlank() &&
+                !storePass.isNullOrBlank() &&
+                !keyPass.isNullOrBlank() &&
+                file(keystorePath).exists()
+            ) {
                 storeFile = file(keystorePath)
-                storePassword = System.getenv("STORE_PASSWORD")
+                storePassword = storePass
                 keyAlias = "upload"
-                keyPassword = System.getenv("KEY_PASSWORD")
+                keyPassword = keyPass
             }
         }
     }
 
     buildTypes {
+
         release {
             isMinifyEnabled = false
             isCrunchPngs = false
@@ -42,14 +56,15 @@ android {
                 "proguard-rules.pro"
             )
 
+            // SAFE fallback (prevents CI crash)
             signingConfig = signingConfigs.findByName("release")
         }
 
         debug {
             isDebuggable = true
 
-            // SAFE FIX:
-            // No signing config required for CI debug builds
+            // IMPORTANT:
+            // NEVER force signing in CI debug builds
             signingConfig = null
         }
     }
