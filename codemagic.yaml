@@ -1,12 +1,17 @@
 workflows:
-  android-build:
-    name: Android Debug + Release Safe Build
+  android-release:
+    name: NexVora Android Release Build
+    max_build_duration: 60
 
     environment:
       java: 17
 
+      groups:
+        - android_signing
+
       vars:
-        GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4096m -Dkotlin.daemon.jvm.options=-Xmx4096m"
+        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+        PACKAGE_TYPE: "AAB"
 
     cache:
       cache_paths:
@@ -14,22 +19,50 @@ workflows:
         - ~/.gradle/wrapper
 
     scripts:
-      - chmod +x gradlew
 
-      # Clean project
-      - ./gradlew clean
+      - name: Checkout
+        script: |
+          echo "Starting NexVora Build..."
 
-      # DEBUG BUILD (SAFE - no keystore needed)
-      - ./gradlew assembleDebug --stacktrace
+      - name: Set permissions
+        script: |
+          chmod +x ./gradlew
 
-      # OPTIONAL RELEASE BUILD (only works if env vars exist)
-      - ./gradlew assembleRelease --stacktrace
+      - name: Decode Keystore
+        script: |
+          echo $CM_KEYSTORE | base64 --decode > /tmp/my-upload-key.jks
+          echo "Keystore created"
+          ls -la /tmp
+
+      - name: Export env variables
+        script: |
+          export KEYSTORE_PATH=/tmp/my-upload-key.jks
+          export STORE_PASSWORD=$CM_KEYSTORE_PASSWORD
+          export KEY_PASSWORD=$CM_KEY_ALIAS_PASSWORD
+
+      - name: Clean Project
+        script: |
+          ./gradlew clean
+
+      - name: Build Release (AAB)
+        script: |
+          if [ "$PACKAGE_TYPE" = "AAB" ]; then
+            ./gradlew bundleRelease --stacktrace
+          else
+            ./gradlew assembleRelease --stacktrace
+          fi
 
     artifacts:
-      - app/build/outputs/apk/debug/*.apk
-      - app/build/outputs/apk/release/*.apk
+      - app/build/outputs/**/*.aab
+      - app/build/outputs/**/*.apk
+      - app/build/reports/**
 
     publishing:
       email:
         recipients:
-          - dev@codemagic.io
+          - your-email@example.com
+
+      # optional Play Store publish (enable if needed)
+      # google_play:
+      #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+      #   track: internal
