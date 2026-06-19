@@ -14,7 +14,6 @@ cache:
 
 scripts:
   - chmod +x gradlew
-  - ./gradlew --stop
   - ./gradlew clean
   - ./gradlew assembleDebug --stacktrace
 
