@@ -1,11 +1,12 @@
 workflows:
-  android-debug:
-    name: Android Debug Build
+  android-build:
+    name: Android Debug + Release Safe Build
 
     environment:
       java: 17
+
       vars:
-        GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4096m"
+        GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4096m -Dkotlin.daemon.jvm.options=-Xmx4096m"
 
     cache:
       cache_paths:
@@ -14,8 +15,21 @@ workflows:
 
     scripts:
       - chmod +x gradlew
+
+      # Clean project
       - ./gradlew clean
+
+      # DEBUG BUILD (SAFE - no keystore needed)
       - ./gradlew assembleDebug --stacktrace
 
+      # OPTIONAL RELEASE BUILD (only works if env vars exist)
+      - ./gradlew assembleRelease --stacktrace
+
     artifacts:
-      - app/build/outputs/**/*.apk
+      - app/build/outputs/apk/debug/*.apk
+      - app/build/outputs/apk/release/*.apk
+
+    publishing:
+      email:
+        recipients:
+          - dev@codemagic.io
