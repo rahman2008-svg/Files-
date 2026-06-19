@@ -1,68 +1,44 @@
 workflows:
   android-release:
-    name: NexVora Android Release Build
-    max_build_duration: 60
+    name: Android Release AAB (NexVora Ready)
+    max_build_duration: 120
 
     environment:
       java: 17
 
-      groups:
-        - android_signing
+      android_signing:
+        - keystore_reference
 
       vars:
-        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-        PACKAGE_TYPE: "AAB"
-
-    cache:
-      cache_paths:
-        - ~/.gradle/caches
-        - ~/.gradle/wrapper
+        PACKAGE_NAME: "com.aistudio.files.go.kxmpzq"
+        GRADLEW_PATH: "./gradlew"
 
     scripts:
 
       - name: Checkout
         script: |
-          echo "Starting NexVora Build..."
+          git checkout .
 
-      - name: Set permissions
+      - name: Set up local properties
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+
+      - name: Clean project
         script: |
           chmod +x ./gradlew
-
-      - name: Decode Keystore
-        script: |
-          echo $CM_KEYSTORE | base64 --decode > /tmp/my-upload-key.jks
-          echo "Keystore created"
-          ls -la /tmp
-
-      - name: Export env variables
-        script: |
-          export KEYSTORE_PATH=/tmp/my-upload-key.jks
-          export STORE_PASSWORD=$CM_KEYSTORE_PASSWORD
-          export KEY_PASSWORD=$CM_KEY_ALIAS_PASSWORD
-
-      - name: Clean Project
-        script: |
           ./gradlew clean
 
-      - name: Build Release (AAB)
+      - name: Build Release AAB
         script: |
-          if [ "$PACKAGE_TYPE" = "AAB" ]; then
-            ./gradlew bundleRelease --stacktrace
-          else
-            ./gradlew assembleRelease --stacktrace
-          fi
+          ./gradlew bundleRelease \
+          --stacktrace \
+          --no-daemon
 
     artifacts:
       - app/build/outputs/**/*.aab
       - app/build/outputs/**/*.apk
-      - app/build/reports/**
 
     publishing:
       email:
         recipients:
-          - your-email@example.com
-
-      # optional Play Store publish (enable if needed)
-      # google_play:
-      #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-      #   track: internal
+          - dev@nexvora.com
