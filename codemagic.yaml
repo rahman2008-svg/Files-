@@ -13,9 +13,4 @@ workflows:
       - ./gradlew assembleDebug
 
     artifacts:
-      - app/build/outputs/apk/debug/*.apk
-
-    publishing:
-      email:
-        recipients:
-          - your@email.com
+      - app/build/outputs/apk/debug/app-debug.apk
