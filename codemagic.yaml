@@ -1,9 +1,11 @@
 workflows:
   android-release:
-    name: Files APK Build (Stable)
+    name: Files Signed APK Build
 
     environment:
       java: 17
+      android_signing:
+        - keystore_reference
 
     cache:
       cache_paths:
@@ -11,9 +13,19 @@ workflows:
         - ~/.gradle/wrapper
 
     scripts:
-      - chmod +x gradlew
-      - ./gradlew clean
-      - ./gradlew assembleDebug --stacktrace
+      - name: Grant permission
+        script: chmod +x gradlew
+
+      - name: Clean project
+        script: ./gradlew clean
+
+      - name: Build Release APK
+        script: ./gradlew assembleRelease --stacktrace
 
     artifacts:
-      - app/build/outputs/apk/**/**/*.apk
+      - app/build/outputs/apk/release/app-release.apk
+
+    publishing:
+      email:
+        recipients:
+          - your-email@example.com
