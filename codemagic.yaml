@@ -1,9 +1,8 @@
 workflows:
-  files-release:
+  android-release:
+    name: Android Release AAB
 
-    name: Files Release AAB
-
-    max_build_duration: 60
+    instance_type: mac_mini_m2
 
     environment:
       java: 17
@@ -14,5 +13,10 @@ workflows:
       - ./gradlew bundleRelease -x signReleaseBundle
 
     artifacts:
-      - app/build/outputs/bundle/release/*.aab
-      - app/build/outputs/apk/**/*.apk
+      - app/build/outputs/**/*.aab
+      - app/build/outputs/**/*.apk
+
+    publishing:
+      email:
+        recipients:
+          - your-email@example.com
