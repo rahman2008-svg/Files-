@@ -1,11 +1,9 @@
 workflows:
-  android-release:
-    name: Files Production APK
+  android-build:
+    name: Files Debug APK
 
     environment:
       java: 17
-      android_signing:
-        - keystore_reference
 
     cache:
       cache_paths:
@@ -15,7 +13,7 @@ workflows:
     scripts:
       - chmod +x gradlew
       - ./gradlew clean
-      - ./gradlew assembleRelease --stacktrace
+      - ./gradlew assembleDebug --stacktrace
 
     artifacts:
-      - app/build/outputs/apk/release/app-release.apk
+      - "**/*.apk"
