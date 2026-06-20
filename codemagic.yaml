@@ -1,11 +1,9 @@
 workflows:
-  android-debug-build:
-    name: Files APK Debug Build (Stable)
+  android-release:
+    name: Files APK Build (Stable)
 
     environment:
       java: 17
-      android_signing:
-        - keystore_reference
 
     cache:
       cache_paths:
@@ -13,22 +11,9 @@ workflows:
         - ~/.gradle/wrapper
 
     scripts:
-      - name: Grant permissions
-        script: chmod +x gradlew
-
-      - name: Clean project
-        script: ./gradlew clean
-
-      - name: Download dependencies
-        script: ./gradlew dependencies
-
-      - name: Build Debug APK
-        script: ./gradlew assembleDebug --stacktrace
+      - chmod +x gradlew
+      - ./gradlew clean
+      - ./gradlew assembleDebug --stacktrace
 
     artifacts:
       - app/build/outputs/apk/debug/app-debug.apk
-
-    publishing:
-      email:
-        recipients:
-          - your-email@example.com
