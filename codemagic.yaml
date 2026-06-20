@@ -1,14 +1,19 @@
 workflows:
-  android-release:
-    name: Files AAB Build
+  build-apk:
+    name: Files APK Build
+
+    max_build_duration: 60
+
+    environment:
+      java: 17
 
     scripts:
       - chmod +x gradlew
       - ./gradlew clean
-      - ./gradlew bundleRelease -x signReleaseBundle
+      - ./gradlew assembleDebug
 
     artifacts:
-      - app/build/outputs/bundle/release/*.aab
+      - app/build/outputs/apk/debug/*.apk
 
     publishing:
       email:
