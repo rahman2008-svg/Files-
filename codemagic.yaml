@@ -2,8 +2,6 @@ workflows:
   android-release:
     name: Files APK Build
 
-    max_build_duration: 60
-
     environment:
       java: 17
 
@@ -13,4 +11,4 @@ workflows:
       - ./gradlew assembleDebug
 
     artifacts:
-      - app/build/outputs/apk/debug/app-debug.apk
+      - app/build/outputs/apk/debug/*.apk
