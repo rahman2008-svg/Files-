@@ -1,11 +1,12 @@
 workflows:
   android-release:
-    name: Android Release AAB
+    name: Android Release
 
     instance_type: mac_mini_m2
 
     environment:
-      java: 17
+      vars:
+        GRADLE_OPTS: "-Xmx4g"
 
     scripts:
       - chmod +x gradlew
@@ -19,4 +20,4 @@ workflows:
     publishing:
       email:
         recipients:
-          - your-email@example.com
+          - your-email@gmail.com
