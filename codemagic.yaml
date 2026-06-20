@@ -1,6 +1,6 @@
 workflows:
-  android-apk:
-    name: Full Working APK Build
+  android-release:
+    name: Files APK Build
 
     environment:
       java: 17
@@ -11,17 +11,9 @@ workflows:
         - ~/.gradle/wrapper
 
     scripts:
-      - name: Grant permission
-        script: chmod +x gradlew
-
-      - name: Clean project
-        script: ./gradlew clean
-
-      - name: Build APK
-        script: ./gradlew assembleDebug --stacktrace
-
-      - name: Show APK location
-        script: find . -name "*.apk"
+      - chmod +x gradlew
+      - ./gradlew clean
+      - ./gradlew assembleDebug --stacktrace
 
     artifacts:
       - "**/*.apk"
