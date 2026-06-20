@@ -1,6 +1,6 @@
 workflows:
-  android-build:
-    name: Files Debug APK
+  android-release:
+    name: Files APK Build
 
     environment:
       java: 17
