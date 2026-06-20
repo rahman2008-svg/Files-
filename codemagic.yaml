@@ -1,6 +1,6 @@
 workflows:
-  android-build:
-    name: Files Working APK Build
+  android-release:
+    name: Files APK Build
 
     environment:
       java: 17
@@ -14,9 +14,6 @@ workflows:
       - chmod +x gradlew
       - ./gradlew clean
       - ./gradlew assembleDebug --stacktrace
-
-      # Debug: দেখবে APK কোথায় তৈরি হচ্ছে
-      - find . -name "*.apk"
 
     artifacts:
       - "**/*.apk"
